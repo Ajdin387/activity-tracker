@@ -21,8 +21,14 @@ public class ActivityService {
         this.mapper = mapper;
     }
 
-    public List<ActivityResponse> getAll () {
+    public List<ActivityResponse> getAll() {
         return mapper.toResponses(repo.findAll());
+    }
+
+    public ActivityResponse getById(long id) {
+        Activity entity = repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Activity with id " + id + " not found"));
+        return mapper.toResponse(entity);
     }
 
     public ActivityResponse create(CreateActivityRequest req) {
@@ -32,9 +38,8 @@ public class ActivityService {
     }
 
     public void delete(long id) {
-        if (!repo.existsById(id)) {
-            throw new NotFoundException("Activity with id " + id + " not found");
-        }
-        repo.deleteById(id);
+        Activity entity = repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Activity with id " + id + " not found"));
+        repo.delete(entity);
     }
 }
