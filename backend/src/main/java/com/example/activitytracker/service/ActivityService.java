@@ -2,6 +2,7 @@ package com.example.activitytracker.service;
 
 import com.example.activitytracker.dto.ActivityResponse;
 import com.example.activitytracker.dto.CreateActivityRequest;
+import com.example.activitytracker.exception.NotFoundException;
 import com.example.activitytracker.mapper.ActivityMapper;
 import com.example.activitytracker.model.Activity;
 import com.example.activitytracker.repository.ActivityRepository;
@@ -31,6 +32,9 @@ public class ActivityService {
     }
 
     public void delete(long id) {
+        if (!repo.existsById(id)) {
+            throw new NotFoundException("Activity with id " + id + " not found");
+        }
         repo.deleteById(id);
     }
 }
