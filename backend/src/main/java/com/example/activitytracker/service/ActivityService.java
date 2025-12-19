@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -24,11 +25,11 @@ public class ActivityService {
         this.mapper = mapper;
     }
 
-    public List<ActivityResponse> getAll(Sort sort) {
+    public List<ActivityResponse> getAll(String category, LocalDate from, LocalDate to, String q, Sort sort) {
         Sort effective = (sort == null || sort.isUnsorted())
                 ? Sort.by(Sort.Direction.DESC, "date", "id")
                 : sort;
-        return mapper.toResponses(repo.findAll(effective));
+        return mapper.toResponses(repo.search(category, from, to, q, effective));
     }
 
     public ActivityResponse getById(long id) {

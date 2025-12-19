@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -24,8 +25,18 @@ public class ActivityController {
     }
 
     @GetMapping
-    public List<ActivityResponse> getAll(Sort sort) {
-        return service.getAll(sort);
+    public List<ActivityResponse> getAll(@RequestParam(required = false) String category,
+                                         @RequestParam(required = false) LocalDate from,
+                                         @RequestParam(required = false) LocalDate to,
+                                         @RequestParam(required = false) String q,
+                                         Sort sort) {
+
+        category = (category == null || category.isBlank()) ? null : category.trim();
+        q = (q == null || q.isBlank()) ? null : q.trim();
+
+        if (from != null && to != null && from.isAfter(to)) throw new IllegalArgumentException("'from' must be before 'to'");
+
+        return service.getAll(category, from, to, q, sort);
     }
 
     @GetMapping("/{id}")
