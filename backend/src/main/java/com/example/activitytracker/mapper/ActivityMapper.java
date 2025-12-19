@@ -14,6 +14,11 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ActivityMapper {
 
+    @Named("trimRequired")
+    default String trimRequired(String value) {
+        return (value == null) ? null : value.trim();
+    }
+
     @Named("trimToNull")
     default String trimToNull(String value) {
         if (value == null) return null;
@@ -22,20 +27,19 @@ public interface ActivityMapper {
     }
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", source = "name", qualifiedByName = "trimToNull")
-    @Mapping(target = "category", source = "category", qualifiedByName = "trimToNull")
+    @Mapping(target = "name", source = "name", qualifiedByName = "trimRequired")
+    @Mapping(target = "category", source = "category", qualifiedByName = "trimRequired")
     @Mapping(target = "description", source = "description", qualifiedByName = "trimToNull") // v primeru "" postavi na null, lepše za bazo
     Activity toEntity(CreateActivityRequest request);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", source = "name", qualifiedByName = "trimToNull")
-    @Mapping(target = "category", source = "category", qualifiedByName = "trimToNull")
+    @Mapping(target = "name", source = "name", qualifiedByName = "trimRequired")
+    @Mapping(target = "category", source = "category", qualifiedByName = "trimRequired")
     @Mapping(target = "description", source = "description", qualifiedByName = "trimToNull")
     void updateEntity(UpdateActivityRequest req, @MappingTarget Activity entity);
 
     ActivityResponse toResponse(Activity entity);
 
     List<ActivityResponse> toResponses(List<Activity> entities);
-
 
 }
