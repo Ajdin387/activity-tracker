@@ -2,6 +2,7 @@ package com.example.activitytracker.controller;
 
 import com.example.activitytracker.dto.ActivityResponse;
 import com.example.activitytracker.dto.CreateActivityRequest;
+import com.example.activitytracker.dto.UpdateActivityRequest;
 import com.example.activitytracker.service.ActivityService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
@@ -42,6 +43,11 @@ public class ActivityController {
                 .buildAndExpand(created.id())
                 .toUri();
         return ResponseEntity.created(location).body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ActivityResponse> update(@PathVariable long id, @Valid @RequestBody UpdateActivityRequest req) {
+        return ResponseEntity.ok(service.update(id, req));
     }
 
     @DeleteMapping("/{id}")

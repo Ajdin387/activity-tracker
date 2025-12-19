@@ -2,12 +2,14 @@ package com.example.activitytracker.service;
 
 import com.example.activitytracker.dto.ActivityResponse;
 import com.example.activitytracker.dto.CreateActivityRequest;
+import com.example.activitytracker.dto.UpdateActivityRequest;
 import com.example.activitytracker.exception.NotFoundException;
 import com.example.activitytracker.mapper.ActivityMapper;
 import com.example.activitytracker.model.Activity;
 import com.example.activitytracker.repository.ActivityRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,6 +43,18 @@ public class ActivityService {
         return mapper.toResponse(saved);
     }
 
+    @Transactional
+    public ActivityResponse update(long id, UpdateActivityRequest req) {
+        Activity entity = repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Activity with id " + id + " not found"));
+
+        mapper.updateEntity(req, entity);
+
+        Activity saved = repo.save(entity);
+        return mapper.toResponse(saved);
+    }
+
+    @Transactional
     public void delete(long id) {
         Activity entity = repo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Activity with id " + id + " not found"));
