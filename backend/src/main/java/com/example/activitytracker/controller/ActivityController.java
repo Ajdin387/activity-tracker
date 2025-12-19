@@ -4,6 +4,7 @@ import com.example.activitytracker.dto.ActivityResponse;
 import com.example.activitytracker.dto.CreateActivityRequest;
 import com.example.activitytracker.service.ActivityService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,8 +23,8 @@ public class ActivityController {
     }
 
     @GetMapping
-    public List<ActivityResponse> getAll() {
-        return service.getAll();
+    public List<ActivityResponse> getAll(Sort sort) {
+        return service.getAll(sort);
     }
 
     @GetMapping("/{id}")

@@ -6,6 +6,7 @@ import com.example.activitytracker.exception.NotFoundException;
 import com.example.activitytracker.mapper.ActivityMapper;
 import com.example.activitytracker.model.Activity;
 import com.example.activitytracker.repository.ActivityRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +22,11 @@ public class ActivityService {
         this.mapper = mapper;
     }
 
-    public List<ActivityResponse> getAll() {
-        return mapper.toResponses(repo.findAll());
+    public List<ActivityResponse> getAll(Sort sort) {
+        Sort effective = (sort == null || sort.isUnsorted())
+                ? Sort.by(Sort.Direction.DESC, "date", "id")
+                : sort;
+        return mapper.toResponses(repo.findAll(effective));
     }
 
     public ActivityResponse getById(long id) {
