@@ -1,6 +1,8 @@
 package com.example.activitytracker.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -14,6 +16,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
@@ -48,6 +52,18 @@ public class GlobalExceptionHandler {
                 "status", 404,
                 "error", "Not Found",
                 "message", ex.getMessage(),
+                "path", req.getRequestURI(),
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleUnexpected (Exception ex, HttpServletRequest req) {
+        log.error("Unexpected error", ex);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "status", 500,
+                "error", "Internal Server Error",
+                "message", "Unexpected server error",
                 "path", req.getRequestURI(),
                 "timestamp", Instant.now().toString()
         ));
