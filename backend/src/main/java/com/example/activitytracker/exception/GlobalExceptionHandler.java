@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -52,6 +54,31 @@ public class GlobalExceptionHandler {
                 "status", 404,
                 "error", "Not Found",
                 "message", ex.getMessage(),
+                "path", req.getRequestURI(),
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleBadJson (HttpMessageNotReadableException ex, HttpServletRequest req) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "status", 400,
+                "error", "Bad Request",
+                "message", "Malformed JSON or invalid value type",
+                "path", req.getRequestURI(),
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        String param = ex.getName();
+        String value = ex.getValue() == null ? "null" : ex.getValue().toString();
+
+        return ResponseEntity.badRequest().body(Map.of(
+                "status", 400,
+                "error", "Bad Request",
+                "message", "Invalid value for parameter '" + param + "': " + value,
                 "path", req.getRequestURI(),
                 "timestamp", Instant.now().toString()
         ));
