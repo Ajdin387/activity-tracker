@@ -1,6 +1,7 @@
 package com.example.activitytracker.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,6 +39,17 @@ public class GlobalExceptionHandler {
                 "path", req.getRequestURI(),
                 "timestamp", Instant.now().toString(),
                 "fieldErrors", fieldErrors
+        ));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound (NotFoundException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "status", 404,
+                "error", "Not Found",
+                "message", ex.getMessage(),
+                "path", req.getRequestURI(),
+                "timestamp", Instant.now().toString()
         ));
     }
 }
