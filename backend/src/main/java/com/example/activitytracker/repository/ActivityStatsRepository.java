@@ -18,9 +18,9 @@ public interface ActivityStatsRepository
     @Query("""
             select coalesce(sum(a.durationMinutes), 0L)
                 from Activity a
-            where (:categories is null or lower(a.category) in (:categories))
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (cast(:from as date) is null or a.date >= :from)
+              and (cast(:to as date) is null or a.date <= :to)
             """)
     long statsTotal(
             @Param("categories") List<String> categories,
@@ -31,9 +31,9 @@ public interface ActivityStatsRepository
     @Query("""
             select new com.example.activitytracker.dto.StatsByDayResponse(a.date, coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
-            where (:categories is null or lower(a.category) in (:categories))
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (cast(:from as date) is null or a.date >= :from)
+              and (cast(:to as date) is null or a.date <= :to)
             group by a.date
             order by a.date asc
             """)
@@ -46,9 +46,9 @@ public interface ActivityStatsRepository
     @Query("""
             select new com.example.activitytracker.dto.StatsByCategoryResponse(lower(a.category), coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
-            where (:categories is null or lower(a.category) in (:categories))
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (cast(:from as date) is null or a.date >= :from)
+              and (cast(:to as date) is null or a.date <= :to)
             group by lower(a.category)
             order by sum(a.durationMinutes) desc, lower(a.category) asc
             """)
@@ -61,9 +61,9 @@ public interface ActivityStatsRepository
     @Query("""
             select new com.example.activitytracker.dto.StatsByDayCategoryResponse(a.date, lower(a.category), coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
-            where (:categories is null or lower(a.category) in (:categories))
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (cast(:from as date) is null or a.date >= :from)
+              and (cast(:to as date) is null or a.date <= :to)
             group by a.date, lower(a.category)
             order by a.date asc, sum(a.durationMinutes) desc, lower(a.category) asc
             """)

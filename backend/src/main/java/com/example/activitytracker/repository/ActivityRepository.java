@@ -14,13 +14,13 @@ import java.util.List;
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query("""
         select a from Activity a
-        where (:category is null or lower(a.category) = lower(:category))
-          and (:from is null or a.date >= :from)
-          and (:to is null or a.date <= :to)
+        where (lower(a.category) = lower(:category) or :category is null)
+          and (cast(:from as date) is null or a.date >= :from)
+          and (cast(:to as date) is null or a.date <= :to)
           and (
-            :q is null or
             lower(a.name) like lower(concat('%', :q, '%')) or
-            lower(coalesce(a.description, '')) like lower(concat('%', :q, '%'))
+            lower(coalesce(a.description, '')) like lower(concat('%', :q, '%')) or
+            :q is null
           )
     """)
     List<Activity> search(
