@@ -31,10 +31,10 @@ public class ActivityController {
                                          @RequestParam(required = false) String q,
                                          Sort sort) {
 
-        category = (category == null || category.isBlank()) ? null : category.trim();
-        q = (q == null || q.isBlank()) ? null : q.trim();
+        category = normalizeOptionalString(category);
+        q = normalizeOptionalString(q);
 
-        if (from != null && to != null && from.isAfter(to)) throw new IllegalArgumentException("'from' must be before 'to'");
+        validateDateRange(from, to);
 
         return service.getAll(category, from, to, q, sort);
     }
@@ -66,4 +66,17 @@ public class ActivityController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    private static void validateDateRange(LocalDate from, LocalDate to) {
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new IllegalArgumentException("'from' must be before 'to'");
+        }
+    }
+
+    private static String normalizeOptionalString(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
 }
+
