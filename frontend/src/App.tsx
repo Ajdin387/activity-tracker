@@ -1,9 +1,178 @@
-import React from 'react';
+import { useState } from 'react';
 import './App.css';
 
+type Activity = {
+  id: number;
+  name: string;
+  description?: string;
+  category: string;
+  date: string;
+  durationMinutes: number;
+}
+
+const hardcodedActivities: Activity[] = [
+    {
+      id: 1,
+      name: "Reading",
+      description: "Coding with Max, chapter 3",
+      category: "Books",
+      date: "2025-12-22",
+      durationMinutes: 30,
+    },
+    {
+      id: 2,
+      name: "Gym",
+      description: "Leg day",
+      category: "Sport",
+      date: "2025-12-22",
+      durationMinutes: 90,
+    },
+    {
+      id: 3,
+      name: "Cooking",
+      description: "Chicken pasta",
+      category: "Home",
+      date: "2025-12-22",
+      durationMinutes: 40,
+    },
+  ]
+
 function App() {
+  const [activities, setActivities] = useState<Activity[]>(hardcodedActivities);
+
+  const [newName, setNewName] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [newDurationMinutes, setNewDurationMinutes] = useState(30);
+
+  const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!canSubmit) return;
+
+    const next: Activity = {
+      id: Date.now(),
+      name: newName.trim(),
+      category: newCategory.trim(),
+      date: newDate,
+      durationMinutes: newDurationMinutes,
+      description: newDescription.trim() ? newDescription.trim() : undefined,
+    }
+
+    setActivities(prev => [next, ...prev])
+    setNewName("")
+    setNewDescription("")
+    setNewCategory("")
+    setNewDate(new Date().toISOString().slice(0, 10))
+    setNewDurationMinutes(30)
+  }
+
+  function onDelete(id: number) {
+    setActivities(prevActivities => (prevActivities.filter(a => a.id !== id)));
+  }
+
   return (
-    <div></div>
+    <div className='page'>
+      <header className='header'>
+        <h1>Activity Tracker</h1>
+        <p>UI skeleton with hardcoded values</p>
+      </header>
+
+      <main className='grid'>
+        <section className='card'>
+          {/* Input activity */}
+          <h2>Add activity</h2>
+          <form className='form' onSubmit={onSubmit}>
+            <label>
+              Name *
+              <input 
+                placeholder="e.g. Reading" 
+                value={newName} 
+                onChange={e => setNewName(e.target.value)}
+              />
+            </label>
+
+            <label>
+              Category *
+              <input 
+                placeholder="e.g. Sport" 
+                value={newCategory} 
+                onChange={e => setNewCategory(e.target.value)}
+              />
+            </label>
+
+            <div className='row2'>
+              <label>
+                Date *
+                <input 
+                type="date" 
+                value={newDate}
+                onChange={e => setNewDate(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Duration *
+                <input
+                  type="number"
+                  min={1}
+                  value={newDurationMinutes}
+                  onChange={e => setNewDurationMinutes(Number(e.target.value))}
+                />
+              </label>
+            </div>
+
+            <label>
+              Description
+              <textarea 
+                placeholder="optional" 
+                value={newDescription} 
+                onChange={e => setNewDescription(e.target.value)}
+              />
+            </label>
+
+            <button className='primary' type="submit" disabled={!canSubmit}>
+              Add
+            </button>
+          </form>
+        </section>
+
+        <section className='card'>
+          {/* Activities list */}
+          <div className='listHeader'>
+            <h2>Activities</h2>
+            <span className='badge'>{activities.length}</span>
+          </div>
+
+          {activities.length === 0 ? (
+            <p>No activities yet.</p>
+          ) : (
+            <ul className='list'>
+              {activities.map(a => (
+                <li className='item' key={a.id}>
+                  <div>
+                    <div>
+                      <strong>{a.name}</strong>
+                      <span> - {a.category}</span>
+                    </div>
+                    <div>
+                      {a.date} • {a.durationMinutes} min
+                    </div>
+                    {a.description && <div>{a.description}</div>}
+                  </div>
+                  <button type="button" onClick={() => onDelete(a.id)}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </main>
+    </div>
   );
 }
 
