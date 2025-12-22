@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-import type { Activity, CreateActivityRequest } from './api/types';
-import { createActivity, deleteActivity, listActivities } from './api/activitiesApi';
-
-type LoadStatus = "loading" | "success" | "error";
+import type { CreateActivityRequest } from './api/types';
+import { useActivities } from './hooks/useActivities';
 
 function App() {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [status, setStatus] = useState<LoadStatus>("loading");
+  const { activities, status, reload, create, remove } = useActivities();
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -16,22 +13,6 @@ function App() {
   const [newDurationMinutes, setNewDurationMinutes] = useState(30);
 
   const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1;
-
-  const loadActivities = useCallback(async () => {
-    setStatus("loading");
-    try {
-      const data = await listActivities();
-      setActivities(data);
-      setStatus("success");
-    } catch(e) {
-        console.error("Failed to load activities", e);
-        setStatus("error");
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadActivities();
-  }, [loadActivities])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,8 +28,7 @@ function App() {
     };
 
     try {
-      await createActivity(payload);
-      await loadActivities();
+      await create(payload);
       setNewName("")
       setNewDescription("")
       setNewCategory("")
@@ -62,8 +42,7 @@ function App() {
 
   async function onDelete(id: number) {
     try {
-      await deleteActivity(id);
-      await loadActivities();
+      await remove(id);
     } catch(e) {
       console.error("Failed to delete activity", e);
       alert("Delete failed. Is backend running?");
@@ -146,7 +125,7 @@ function App() {
           {status === "error" && (
             <div>
               <p>Failed to load activities (API not reachable). Is the backend running?</p>
-              <button type='button' onClick={loadActivities}>Retry</button>
+              <button type='button' onClick={reload}>Retry</button>
             </div>
           )}
 
