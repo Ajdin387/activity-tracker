@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import type { Activity } from './api/types';
-import { listActivities } from './api/activitiesApi';
+import { deleteActivity, listActivities } from './api/activitiesApi';
 
 type LoadStatus = "loading" | "success" | "error";
 
@@ -17,21 +17,20 @@ function App() {
 
   const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1
 
-  const loadActivities = useCallback(() => {
+  const loadActivities = useCallback(async () => {
     setStatus("loading");
-    listActivities()
-      .then(data => {
-        setActivities(data);
-        setStatus("success");
-      })
-      .catch((e) => {
+    try {
+      const data = await listActivities();
+      setActivities(data);
+      setStatus("success");
+    } catch(e) {
         console.error("Failed to load activities", e);
         setStatus("error");
-      })
+    }
   }, []);
 
   useEffect(() => {
-    loadActivities();
+    void loadActivities();
   }, [loadActivities])
 
   function onSubmit(e: React.FormEvent) {
@@ -56,8 +55,14 @@ function App() {
     setNewDurationMinutes(30)
   }
 
-  function onDelete(id: number) {
-    setActivities(prevActivities => (prevActivities.filter(a => a.id !== id)));
+  async function onDelete(id: number) {
+    try {
+      await deleteActivity(id);
+      await loadActivities();
+    } catch(e) {
+      console.error("Failed to delete activity", e);
+      alert("Delete failed. Is backend running?");
+    }
   }
 
   return (
