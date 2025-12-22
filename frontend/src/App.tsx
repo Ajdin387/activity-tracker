@@ -1,44 +1,13 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
+import type { Activity } from './api/types';
+import { listActivities } from './api/activitiesApi';
 
-type Activity = {
-  id: number;
-  name: string;
-  description?: string;
-  category: string;
-  date: string;
-  durationMinutes: number;
-}
-
-const hardcodedActivities: Activity[] = [
-    {
-      id: 1,
-      name: "Reading",
-      description: "Coding with Max, chapter 3",
-      category: "Books",
-      date: "2025-12-22",
-      durationMinutes: 30,
-    },
-    {
-      id: 2,
-      name: "Gym",
-      description: "Leg day",
-      category: "Sport",
-      date: "2025-12-22",
-      durationMinutes: 90,
-    },
-    {
-      id: 3,
-      name: "Cooking",
-      description: "Chicken pasta",
-      category: "Home",
-      date: "2025-12-22",
-      durationMinutes: 40,
-    },
-  ]
+type LoadStatus = "loading" | "success" | "error";
 
 function App() {
-  const [activities, setActivities] = useState<Activity[]>(hardcodedActivities);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [status, setStatus] = useState<LoadStatus>("loading");
 
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -47,6 +16,23 @@ function App() {
   const [newDurationMinutes, setNewDurationMinutes] = useState(30);
 
   const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1
+
+  const loadActivities = useCallback(() => {
+    setStatus("loading");
+    listActivities()
+      .then(data => {
+        setActivities(data);
+        setStatus("success");
+      })
+      .catch((e) => {
+        console.error("Failed to load activities", e);
+        setStatus("error");
+      })
+  }, []);
+
+  useEffect(() => {
+    loadActivities();
+  }, [loadActivities])
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,7 +64,7 @@ function App() {
     <div className='page'>
       <header className='header'>
         <h1>Activity Tracker</h1>
-        <p>UI skeleton with hardcoded values</p>
+        <p>UI skeleton (loads from API)</p>
       </header>
 
       <main className='grid'>
@@ -147,9 +133,18 @@ function App() {
             <span className='badge'>{activities.length}</span>
           </div>
 
-          {activities.length === 0 ? (
-            <p>No activities yet.</p>
-          ) : (
+          {status === "error" && (
+            <div>
+              <p>Failed to load activities (API not reachable). Is the backend running?</p>
+              <button type='button' onClick={loadActivities}>Retry</button>
+            </div>
+          )}
+
+          {status === "loading" && <p>Loading data...</p>}
+
+          {status === "success" && activities.length === 0 && ( <p>No activities yet.</p> )}
+
+          {status === "success" && activities.length > 0 && (
             <ul className='list'>
               {activities.map(a => (
                 <li className='item' key={a.id}>
