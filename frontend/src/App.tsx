@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import './App.css';
-import type { Activity } from './api/types';
-import { deleteActivity, listActivities } from './api/activitiesApi';
+import type { Activity, CreateActivityRequest } from './api/types';
+import { createActivity, deleteActivity, listActivities } from './api/activitiesApi';
 
 type LoadStatus = "loading" | "success" | "error";
 
@@ -15,7 +15,7 @@ function App() {
   const [newDate, setNewDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [newDurationMinutes, setNewDurationMinutes] = useState(30);
 
-  const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1
+  const canSubmit = newName.trim().length > 0 && newCategory.trim().length > 0 && newDate.trim().length > 0 && newDurationMinutes >= 1;
 
   const loadActivities = useCallback(async () => {
     setStatus("loading");
@@ -33,26 +33,31 @@ function App() {
     void loadActivities();
   }, [loadActivities])
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     if (!canSubmit) return;
 
-    const next: Activity = {
-      id: Date.now(),
+    const desc = newDescription.trim();
+    const payload: CreateActivityRequest = {
       name: newName.trim(),
       category: newCategory.trim(),
       date: newDate,
       durationMinutes: newDurationMinutes,
-      description: newDescription.trim() ? newDescription.trim() : undefined,
-    }
+      description: desc ? desc : undefined,
+    };
 
-    setActivities(prev => [next, ...prev])
-    setNewName("")
-    setNewDescription("")
-    setNewCategory("")
-    setNewDate(new Date().toISOString().slice(0, 10))
-    setNewDurationMinutes(30)
+    try {
+      await createActivity(payload);
+      await loadActivities();
+      setNewName("")
+      setNewDescription("")
+      setNewCategory("")
+      setNewDate(new Date().toISOString().slice(0, 10))
+      setNewDurationMinutes(30)
+    } catch(e) {
+      console.error("Failed to create activity", e);
+      alert("Create failed. Is backend running?");
+    }
   }
 
   async function onDelete(id: number) {
@@ -111,7 +116,7 @@ function App() {
                   type="number"
                   min={1}
                   value={newDurationMinutes}
-                  onChange={e => setNewDurationMinutes(Number(e.target.value))}
+                  onChange={e => setNewDurationMinutes(Math.max(1, Number(e.target.value) || 1))}
                 />
               </label>
             </div>
