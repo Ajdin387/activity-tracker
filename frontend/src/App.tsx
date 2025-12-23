@@ -4,7 +4,7 @@ import { ActivityForm } from './components/ActivityForm';
 import { ActivityList } from './components/ActivityList';
 
 function App() {
-  const { activities, status, reload, create, remove } = useActivities();
+  const { activities, status, reload, create, remove, filters, applyFilters, clearFilters } = useActivities();
 
   return (
     <div className='page'>
@@ -18,7 +18,15 @@ function App() {
           <ActivityForm onCreate={ create }/>
         </section>
         <section className='card'>
-          <ActivityList onReload={ reload } activities={ activities } status={ status } onRemove={ remove }/>
+          <ActivityList 
+            onReload={ reload }
+            activities={ activities }
+            status={ status }
+            onRemove={ remove }
+            filters={ filters }
+            onApplyFilters={ applyFilters }
+            onClearFilters={ clearFilters }
+          />
         </section>
       </main>
     </div>

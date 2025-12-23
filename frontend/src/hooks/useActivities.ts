@@ -1,28 +1,42 @@
 import { useCallback, useEffect, useState } from "react";
 import { createActivity, deleteActivity, listActivities } from "../api/activitiesApi";
-import { Activity, CreateActivityRequest } from "../api/types";
+import { Activity, ActivityFilters, CreateActivityRequest } from "../api/types";
 
 type LoadStatus = "loading" | "success" | "error";
+
+const DEFAULT_SORT = ["date,desc", "id,desc"];
 
 export function useActivities() {
     const [activities, setActivities] = useState<Activity[]>([]);
     const [status, setStatus] = useState<LoadStatus>("loading");
+    const [filters, setFilters] = useState<ActivityFilters>({ sort: DEFAULT_SORT });
 
     const reload = useCallback(async () => {
         setStatus("loading");
         try {
-        const data = await listActivities();
-        setActivities(data);
-        setStatus("success");
+            const data = await listActivities(filters);
+            setActivities(data);
+            setStatus("success");
         } catch(e) {
             console.error("Failed to load activities", e);
             setStatus("error");
         }
-    }, []);
+    }, [filters]);
 
     useEffect(() => {
         void reload();
     }, [reload])
+
+    const applyFilters = useCallback((next: Omit<ActivityFilters, "sort">) => {
+        setFilters(prev => ({
+            ...prev,
+            ...next,
+        }));
+    }, []);
+
+    const clearFilters = useCallback(() => {
+        setFilters({ sort: DEFAULT_SORT });
+    }, []);
 
     const create = useCallback(
         async (payload: CreateActivityRequest) => {
@@ -40,5 +54,5 @@ export function useActivities() {
         [reload]
     );
 
-    return { activities, status, reload, create, remove };
+    return { activities, status, reload, create, remove, filters, applyFilters, clearFilters };
 }

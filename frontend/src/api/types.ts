@@ -16,3 +16,11 @@ export type CreateActivityRequest = {
 };
 
 export type UpdateActivityRequest = CreateActivityRequest;
+
+export type ActivityFilters = {
+    category?: string;
+    from?: string;
+    to?: string;
+    q?: string;
+    sort?: string[];
+}

@@ -1,4 +1,5 @@
-import { Activity } from "../api/types";
+import { Activity, ActivityFilters } from "../api/types";
+import { ActivityFiltersForm } from "./ActivityFiltersForm";
 
 type LoadStatus = "loading" | "success" | "error";
 
@@ -7,10 +8,15 @@ type Props = {
     activities: Activity[];
     status: LoadStatus;
     onReload: () => void;
+
+    filters: ActivityFilters;
+    onApplyFilters: (f: Omit<ActivityFilters, "sort">) => void;
+    onClearFilters: () => void;
 };
 
-export function ActivityList({ onRemove, activities, status, onReload }: Props) {
-    async function onDelete(id: number) {
+export function ActivityList({ onRemove, activities, status, onReload, filters, onApplyFilters, onClearFilters }: Props) {
+    
+    async function remove(id: number) {
     try {
       await onRemove(id);
     } catch(e) {
@@ -24,6 +30,14 @@ export function ActivityList({ onRemove, activities, status, onReload }: Props) 
         <div className='listHeader'>
             <h2>Activities</h2>
             <span className='badge'>{activities.length}</span>
+          </div>
+
+          <div>
+            <ActivityFiltersForm
+                initial={ filters }
+                onApply={ onApplyFilters }
+                onClear={ onClearFilters }
+            />
           </div>
 
           {status === "error" && (
@@ -51,7 +65,7 @@ export function ActivityList({ onRemove, activities, status, onReload }: Props) 
                     </div>
                     {a.description && <div>{a.description}</div>}
                   </div>
-                  <button type="button" onClick={() => onDelete(a.id)}>
+                  <button type="button" onClick={() => remove(a.id)}>
                     Delete
                   </button>
                 </li>
