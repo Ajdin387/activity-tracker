@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { createActivity, deleteActivity, listActivities } from "../api/activitiesApi";
-import { Activity, ActivityFilters, CreateActivityRequest } from "../api/types";
+import { createActivity, deleteActivity, listActivities, updateActivity } from "../api/activitiesApi";
+import { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "../api/types";
 
 type LoadStatus = "loading" | "success" | "error";
 
@@ -54,5 +54,13 @@ export function useActivities() {
         [reload]
     );
 
-    return { activities, status, reload, create, remove, filters, applyFilters, clearFilters };
+    const update = useCallback(
+        async (id: number, payload: UpdateActivityRequest) => {
+            await updateActivity(id, payload);
+            await reload();
+        },
+        [reload]
+    );
+
+    return { activities, status, reload, create, update, remove, filters, applyFilters, clearFilters };
 }

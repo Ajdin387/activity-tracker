@@ -1,10 +1,14 @@
-import { Activity, ActivityFilters } from "../api/types";
+import { useState } from "react";
+import { Activity, ActivityFilters, UpdateActivityRequest } from "../api/types";
 import { ActivityFiltersForm } from "./ActivityFiltersForm";
+import { ActivityEditForm } from "./ActivityEditForm";
 
 type LoadStatus = "loading" | "success" | "error";
 
 type Props = {
     onRemove: (id: number) => Promise<void>;
+    onUpdate: (id: number, payload: UpdateActivityRequest) => Promise<void>;
+
     activities: Activity[];
     status: LoadStatus;
     onReload: () => void;
@@ -14,8 +18,10 @@ type Props = {
     onClearFilters: () => void;
 };
 
-export function ActivityList({ onRemove, activities, status, onReload, filters, onApplyFilters, onClearFilters }: Props) {
-    
+export function ActivityList({ onRemove, onUpdate, activities, status, onReload, filters, onApplyFilters, onClearFilters }: Props) {
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [savingId, setSavingId] = useState<number | null>(null);
+
     async function remove(id: number) {
     try {
       await onRemove(id);
@@ -25,53 +31,96 @@ export function ActivityList({ onRemove, activities, status, onReload, filters, 
     }
   }
 
+  async function save(id: number, payload: UpdateActivityRequest) {
+    try {
+      setSavingId(id);
+      await onUpdate(id, payload);
+      setEditingId(null);
+    } catch (e) {
+      console.error("Failed to update activity", e);
+      alert("Update failed. Is backend running?");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
   return (
     <div>
         <div className='listHeader'>
             <h2>Activities</h2>
             <span className='badge'>{activities.length}</span>
-          </div>
+        </div>
 
-          <div>
+        <div>
             <ActivityFiltersForm
                 initial={ filters }
                 onApply={ onApplyFilters }
                 onClear={ onClearFilters }
             />
-          </div>
+        </div>
 
-          {status === "error" && (
-            <div>
-              <p>Failed to load activities (API not reachable). Is the backend running?</p>
-              <button type='button' onClick={ onReload }>Retry</button>
-            </div>
-          )}
+        {status === "error" && (
+        <div>
+            <p>Failed to load activities (API not reachable). Is the backend running?</p>
+            <button type='button' onClick={ onReload }>Retry</button>
+        </div>
+        )}
 
-          {status === "loading" && <p>Loading data...</p>}
+        {status === "loading" && <p>Loading data...</p>}
 
-          {status === "success" && activities.length === 0 && ( <p>No activities yet.</p> )}
+        {status === "success" && activities.length === 0 && ( <p>No activities yet.</p> )}
 
-          {status === "success" && activities.length > 0 && (
-            <ul className='list'>
-              {activities.map(a => (
-                <li className='item' key={a.id}>
-                  <div>
-                    <div>
-                      <strong>{a.name}</strong>
-                      <span> - {a.category}</span>
-                    </div>
-                    <div>
-                      {a.date} • {a.durationMinutes} min
-                    </div>
-                    {a.description && <div>{a.description}</div>}
-                  </div>
-                  <button type="button" onClick={() => remove(a.id)}>
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+        {status === "success" && activities.length > 0 && (
+        <ul className='list'>
+            {activities.map((a) => {
+                const isEditing = editingId === a.id;
+                const isSaving = savingId === a.id;
+
+                return (
+                    <li className='item' key={a.id}>
+                        {!isEditing && (
+                            <div>
+                                <div>
+                                    <strong>{a.name}</strong>
+                                    <span> - {a.category}</span>
+                                </div>
+                                <div>
+                                    {a.date} • {a.durationMinutes} min
+                                </div>
+                                {a.description && <div>{a.description}</div>}
+                            </div>
+                        )}
+
+                        {isEditing && (
+                            <ActivityEditForm 
+                                activity={ a }
+                                onSave={ (payload) => save(a.id, payload) }
+                                onCancel={ () => setEditingId(null) }
+                                saving={ isSaving }
+                            />
+                        )}
+
+                        <div className="itemActions">
+                            {!isEditing ? (
+                                <>
+                                <button type="button" onClick={() => setEditingId(a.id)}>
+                                    Edit
+                                </button>
+                                <button type="button" onClick={() => remove(a.id)}>
+                                    Delete
+                                </button>
+                                </>
+                            ) : (
+                                <button type="button" onClick={() => setEditingId(null)} disabled={isSaving}>
+                                    Close
+                                </button>
+                            )}
+                        </div>
+                    </li>
+                )
+            })}
+        </ul>
+        )}
     </div>
   )
 }

@@ -110,3 +110,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+.itemActions {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.editForm {
+  margin-top: 6px;
+}
+
+.item .editForm textarea {
+  min-height: 70px;
+}
