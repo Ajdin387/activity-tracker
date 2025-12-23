@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Activity, ActivityFilters, UpdateActivityRequest } from "../api/types";
+import { Activity, ActivityFilters, UpdateActivityRequest } from "../types/activity";
 import { ActivityFiltersForm } from "./ActivityFiltersForm";
 import { ActivityEditForm } from "./ActivityEditForm";
 

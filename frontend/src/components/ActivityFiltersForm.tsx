@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityFilters } from "../api/types";
+import { ActivityFilters } from "../types/activity";
 
 type Props = {
     initial: ActivityFilters;

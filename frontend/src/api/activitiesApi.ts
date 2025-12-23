@@ -1,5 +1,5 @@
 import { fetchJson } from "./client";
-import type { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "./types";
+import type { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "../types/activity";
 
 export function listActivities(params?: ActivityFilters) {
     const url = new URL("/api/activities", window.location.origin);

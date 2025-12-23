@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, UpdateActivityRequest } from "../api/types"
+import { Activity, UpdateActivityRequest } from "../types/activity"
 
 type Props = {
     activity: Activity;

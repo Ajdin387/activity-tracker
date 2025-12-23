@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreateActivityRequest } from "../api/types";
+import { CreateActivityRequest } from "../types/activity";
 
 type Props = {
     onCreate: (payload: CreateActivityRequest) => Promise<void>;

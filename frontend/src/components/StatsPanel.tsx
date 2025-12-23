@@ -1,4 +1,4 @@
-import type { ActivityFilters } from "../api/types";
+import type { ActivityFilters } from "../types/activity";
 import { useStats } from "../hooks/useStats";
 
 type Props = {

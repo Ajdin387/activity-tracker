@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { createActivity, deleteActivity, listActivities, updateActivity } from "../api/activitiesApi";
-import { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "../api/types";
+import { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "../types/activity";
 
 type LoadStatus = "loading" | "success" | "error";
 
