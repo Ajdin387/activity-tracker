@@ -1,7 +1,7 @@
 export type Activity = {
   id: number;
   name: string;
-  description?: string;
+  description: string | null;
   category: string;
   date: string;
   durationMinutes: number;
