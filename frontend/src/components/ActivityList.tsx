@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Activity, ActivityFilters, UpdateActivityRequest } from "../types/activity";
+import { Activity, ActivityFilters, ActivityPage, UpdateActivityRequest } from "../types/activity";
 import { ActivityFiltersForm } from "./ActivityFiltersForm";
 import { ActivityEditForm } from "./ActivityEditForm";
 
@@ -16,9 +16,13 @@ type Props = {
     filters: ActivityFilters;
     onApplyFilters: (f: Omit<ActivityFilters, "sort">) => void;
     onClearFilters: () => void;
+
+    page: ActivityPage | null;
+    onNextPage: () => void;
+    onPrevPage: () => void;
 };
 
-export function ActivityList({ onRemove, onUpdate, activities, status, onReload, filters, onApplyFilters, onClearFilters }: Props) {
+export function ActivityList({ onRemove, onUpdate, activities, status, onReload, filters, onApplyFilters, onClearFilters, page, onNextPage, onPrevPage }: Props) {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [savingId, setSavingId] = useState<number | null>(null);
 
@@ -48,8 +52,24 @@ export function ActivityList({ onRemove, onUpdate, activities, status, onReload,
     <div>
         <div className='listHeader'>
             <h2>Activities</h2>
-            <span className='badge'>{activities.length}</span>
+            <span className='badge'>{page?.totalElements ?? activities.length}</span>
         </div>
+
+        {page && (
+            <div className="pager">
+                <button type="button" onClick={onPrevPage} disabled={page.first}>
+                    Prev
+                </button>
+
+                <span className="pagerInfo">
+                    Page {page.number + 1} / {page.totalPages} • Total {page.totalElements}
+                </span>
+
+                <button type="button" onClick={onNextPage} disabled={page.last}>
+                    Next
+                </button>
+            </div>
+        )}
 
         <div>
             <ActivityFiltersForm

@@ -12,12 +12,14 @@ export function ActivityFiltersForm({ initial, onApply, onClear }: Props) {
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
     const [q, setQ] = useState("");
+    const [size, setSize] = useState(20);
 
     useEffect(() => {
         setCategory(initial.category ?? "");
         setFrom(initial.from ?? "");
         setTo(initial.to ?? "");
         setQ(initial.q ?? "");
+        setSize(initial.size ?? 20);
     }, [initial.category, initial.from, initial.to, initial.q]);
 
     const normalize = (s: string) => {
@@ -33,6 +35,7 @@ export function ActivityFiltersForm({ initial, onApply, onClear }: Props) {
             category: normalize(category),
             from: normalize(from),
             to: normalize(to),
+            size,
         });
     }
 
@@ -41,6 +44,7 @@ export function ActivityFiltersForm({ initial, onApply, onClear }: Props) {
         setCategory("");
         setFrom("");
         setTo("");
+        setSize(20);
         onClear();
     }
 
@@ -79,9 +83,17 @@ export function ActivityFiltersForm({ initial, onApply, onClear }: Props) {
                     </label>
                 </div>
 
-                <div className="row2">
+                <div className="row3">
                     <button className="primary" type="submit">Apply</button>
                     <button type="button" onClick={clear}>Clear</button>
+                    <label>
+                        Page size
+                        <select value={size} onChange={(e) => setSize(Number(e.target.value))}>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                        </select>
+                    </label>
                 </div>
             </form>
         </div>

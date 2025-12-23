@@ -31,7 +31,8 @@
 }
 
 .form input,
-.form textarea {
+.form textarea,
+.form select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -256,4 +257,27 @@
 .statsRowVal {
   font-size: 13px;
   font-weight: 700;
+}
+
+.pager {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.pagerInfo {
+  font-size: 13px;
+  color: #444;
+}
+
+.row3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.row3 button {
+  height: 42px;
 }

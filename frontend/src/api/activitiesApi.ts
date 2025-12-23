@@ -1,5 +1,5 @@
 import { fetchJson } from "./client";
-import type { Activity, ActivityFilters, CreateActivityRequest, UpdateActivityRequest } from "../types/activity";
+import type { Activity, ActivityFilters, ActivityPage, CreateActivityRequest, UpdateActivityRequest } from "../types/activity";
 
 export function listActivities(params?: ActivityFilters) {
     const url = new URL("/api/activities", window.location.origin);
@@ -9,8 +9,10 @@ export function listActivities(params?: ActivityFilters) {
     if (params?.to) url.searchParams.set("to", params.to);
     if (params?.q) url.searchParams.set("q", params.q);
     (params?.sort ?? []).forEach(s => url.searchParams.append("sort", s));
+    if (params?.page) url.searchParams.set("page", String(params.page));
+    if (params?.size) url.searchParams.set("size", String(params.size));
 
-    return fetchJson<Activity[]>(url.pathname + url.search);
+    return fetchJson<ActivityPage>(url.pathname + url.search);
 }
 
 export function createActivity(payload: CreateActivityRequest) {

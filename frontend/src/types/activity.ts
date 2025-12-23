@@ -23,4 +23,16 @@ export type ActivityFilters = {
     to?: string;
     q?: string;
     sort?: string[];
+    page?: number;
+    size?: number;
 }
+
+export type ActivityPage = {
+  content: Activity[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+};

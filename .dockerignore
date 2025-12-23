@@ -1,0 +1,7 @@
+**/node_modules
+**/build
+**/dist
+**/target
+**/.idea
+**/.vscode
+**/.git

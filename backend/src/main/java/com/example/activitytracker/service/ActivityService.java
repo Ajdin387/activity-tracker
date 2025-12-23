@@ -7,12 +7,12 @@ import com.example.activitytracker.exception.NotFoundException;
 import com.example.activitytracker.mapper.ActivityMapper;
 import com.example.activitytracker.model.Activity;
 import com.example.activitytracker.repository.ActivityRepository;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ActivityService {
@@ -25,11 +25,8 @@ public class ActivityService {
         this.mapper = mapper;
     }
 
-    public List<ActivityResponse> getAll(String category, LocalDate from, LocalDate to, String q, Sort sort) {
-        Sort effective = (sort == null || sort.isUnsorted())
-                ? Sort.by(Sort.Direction.DESC, "date", "id")
-                : sort;
-        return mapper.toResponses(repo.search(category, from, to, q, effective));
+    public Page<ActivityResponse> getAll(String category, LocalDate from, LocalDate to, String q, Pageable pageable) {
+        return repo.search(category, from, to, q, pageable).map(mapper::toResponse);
     }
 
     public ActivityResponse getById(long id) {

@@ -5,7 +5,7 @@ import { ActivityList } from './components/ActivityList';
 import { StatsPanel } from './components/StatsPanel';
 
 function App() {
-  const { activities, status, reload, create, update, remove, filters, applyFilters, clearFilters } = useActivities();
+  const { activities, page, status, reload, create, update, remove, filters, applyFilters, clearFilters, nextPage, prevPage } = useActivities();
 
   return (
     <div className='page'>
@@ -32,6 +32,10 @@ function App() {
             filters={ filters }
             onApplyFilters={ applyFilters }
             onClearFilters={ clearFilters }
+
+            page={ page }
+            onNextPage={ nextPage }
+            onPrevPage={ prevPage }
           />
         </section>
       </main>
