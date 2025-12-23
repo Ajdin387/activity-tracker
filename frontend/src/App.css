@@ -124,3 +124,136 @@
 .item .editForm textarea {
   min-height: 70px;
 }
+
+.stats {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #fafafa;
+}
+
+.statsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.statsTitle {
+  margin: 0;
+  font-size: 16px;
+}
+
+.statsHint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.3;
+}
+
+.statsHint code {
+  font-size: 11px;
+}
+
+.statsBtn {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.statsBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.statsState {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed #ddd;
+  background: #fff;
+  font-size: 13px;
+}
+
+.statsError {
+  border-color: #f0b4b4;
+  background: #fff7f7;
+}
+
+.statsCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 10px 0 12px;
+}
+
+.statsCard {
+  border: 1px solid #eee;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.statsLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.statsValue {
+  font-size: 18px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.statsSub {
+  font-size: 12px;
+  color: #777;
+  margin-top: 2px;
+}
+
+.statsSection {
+  margin-top: 12px;
+}
+
+.statsSectionTitle {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.statsEmpty {
+  font-size: 13px;
+  color: #777;
+  padding: 6px 0;
+}
+
+.statsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: white;
+}
+
+.statsRowKey {
+  font-size: 13px;
+}
+
+.statsRowVal {
+  font-size: 13px;
+  font-weight: 700;
+}

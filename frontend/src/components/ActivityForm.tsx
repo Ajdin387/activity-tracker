@@ -42,7 +42,6 @@ export function ActivityForm({ onCreate }: Props) {
 
     return (
         <div>
-            {/* Input activity */}
             <h2>Add activity</h2>
             <form className='form' onSubmit={onSubmit}>
                 <label>
