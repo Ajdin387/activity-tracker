@@ -15,8 +15,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Query("""
         select a from Activity a
         where (lower(a.category) = lower(:category) or :category is null)
-          and (:from is null or a.date >= :from)
-          and (:to is null or a.date <= :to)
+          and (a.date >= coalesce(:from, a.date))
+          and (a.date <= coalesce(:to, a.date))
           and (
             lower(a.name) like lower(concat('%', :q, '%')) or
             lower(coalesce(a.description, '')) like lower(concat('%', :q, '%')) or

@@ -19,8 +19,8 @@ public interface ActivityStatsRepository
             select coalesce(sum(a.durationMinutes), 0L)
                 from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
             """)
     long statsTotal(
             @Param("categories") List<String> categories,
@@ -32,8 +32,8 @@ public interface ActivityStatsRepository
             select new com.example.activitytracker.dto.StatsByDayResponse(a.date, coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
             group by a.date
             order by a.date asc
             """)
@@ -47,8 +47,8 @@ public interface ActivityStatsRepository
             select new com.example.activitytracker.dto.StatsByCategoryResponse(lower(a.category), coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
             group by lower(a.category)
             order by sum(a.durationMinutes) desc, lower(a.category) asc
             """)
@@ -62,8 +62,8 @@ public interface ActivityStatsRepository
             select new com.example.activitytracker.dto.StatsByDayCategoryResponse(a.date, lower(a.category), coalesce(sum(a.durationMinutes), 0L))
                 from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
-              and (:from is null or a.date >= :from)
-              and (:to is null or a.date <= :to)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
             group by a.date, lower(a.category)
             order by a.date asc, sum(a.durationMinutes) desc, lower(a.category) asc
             """)

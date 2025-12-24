@@ -21,7 +21,7 @@ public class Activity {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
+    @Column(name = "activity_date", nullable = false)
     private LocalDate date;
 
     @Column(nullable = false)
