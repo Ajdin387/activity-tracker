@@ -3,6 +3,7 @@ package com.example.activitytracker.controller;
 import com.example.activitytracker.dto.StatsByCategoryResponse;
 import com.example.activitytracker.dto.StatsByDayCategoryResponse;
 import com.example.activitytracker.dto.StatsByDayResponse;
+import com.example.activitytracker.dto.StatsSummaryResponse;
 import com.example.activitytracker.dto.StatsTotalResponse;
 import com.example.activitytracker.service.ActivityStatsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,36 +26,50 @@ public class ActivityStatsController {
 
     @GetMapping("/total")
     public StatsTotalResponse getStatsTotal(
-            @RequestParam (required = false) List<String> categories,
-            @RequestParam (required = false) LocalDate from,
-            @RequestParam (required = false) LocalDate to) {
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
         validateDateRange(from, to);
         return service.total(normalizeCategories(categories), from, to);
     }
 
+    @GetMapping("/summary")
+    public StatsSummaryResponse getSummary(
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
+        validateDateRange(from, to);
+        return service.summary(normalizeCategories(categories), from, to);
+    }
+
     @GetMapping("/by-day")
     public List<StatsByDayResponse> getStatsByDay(
-            @RequestParam (required = false) List<String> categories,
-            @RequestParam (required = false) LocalDate from,
-            @RequestParam (required = false) LocalDate to) {
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
         validateDateRange(from, to);
         return service.byDay(normalizeCategories(categories), from, to);
     }
 
     @GetMapping("/by-category")
     public List<StatsByCategoryResponse> getStatsByCategory(
-            @RequestParam (required = false) List<String> categories,
-            @RequestParam (required = false) LocalDate from,
-            @RequestParam (required = false) LocalDate to) {
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
         validateDateRange(from, to);
         return service.byCategory(normalizeCategories(categories), from, to);
     }
 
     @GetMapping("/by-day-category")
     public List<StatsByDayCategoryResponse> getStatsByDayCategory(
-            @RequestParam (required = false) List<String> categories,
-            @RequestParam (required = false) LocalDate from,
-            @RequestParam (required = false) LocalDate to) {
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to
+    ) {
         validateDateRange(from, to);
         return service.byDayCategory(normalizeCategories(categories), from, to);
     }
