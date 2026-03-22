@@ -25,8 +25,17 @@ public class ActivityService {
         this.mapper = mapper;
     }
 
-    public Page<ActivityResponse> getAll(String category, LocalDate from, LocalDate to, String q, Pageable pageable) {
-        return repo.search(category, from, to, q, pageable).map(mapper::toResponse);
+    public Page<ActivityResponse> getAll(
+            String category,
+            LocalDate from,
+            LocalDate to,
+            String q,
+            Integer minDuration,
+            Integer maxDuration,
+            Pageable pageable
+    ) {
+        return repo.search(category, from, to, q, minDuration, maxDuration, pageable)
+                .map(mapper::toResponse);
     }
 
     public ActivityResponse getById(long id) {
@@ -47,7 +56,6 @@ public class ActivityService {
                 .orElseThrow(() -> new NotFoundException("Activity with id " + id + " not found"));
 
         mapper.updateEntity(req, entity);
-
         Activity saved = repo.save(entity);
         return mapper.toResponse(saved);
     }
