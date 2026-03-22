@@ -27,25 +27,27 @@ public class ActivityController {
         this.service = service;
     }
 
-
     @GetMapping
-    public Page<ActivityResponse> getAll(@RequestParam(required = false) String category,
-                                         @RequestParam(required = false) LocalDate from,
-                                         @RequestParam(required = false) LocalDate to,
-                                         @RequestParam(required = false) String q,
-                                         @PageableDefault(size = 20)
-                                         @SortDefault.SortDefaults({
-                                                 @SortDefault(sort = "date", direction = Sort.Direction.DESC),
-                                                 @SortDefault(sort = "id", direction = Sort.Direction.DESC)
-                                         })
-                                         Pageable pageable) {
-
+    public Page<ActivityResponse> getAll(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Integer minDuration,
+            @RequestParam(required = false) Integer maxDuration,
+            @PageableDefault(size = 20)
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "date", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+            }) Pageable pageable
+    ) {
         category = normalizeOptionalString(category);
         q = normalizeOptionalString(q);
 
         validateDateRange(from, to);
+        validateDurationRange(minDuration, maxDuration);
 
-        return service.getAll(category, from, to, q, pageable);
+        return service.getAll(category, from, to, q, minDuration, maxDuration, pageable);
     }
 
     @GetMapping("/{id}")
@@ -56,12 +58,12 @@ public class ActivityController {
     @PostMapping
     public ResponseEntity<ActivityResponse> create(@Valid @RequestBody CreateActivityRequest req) {
         ActivityResponse created = service.create(req);
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(created.id())
                 .toUri();
+
         return ResponseEntity.created(location).body(created);
     }
 
@@ -82,10 +84,21 @@ public class ActivityController {
         }
     }
 
+    private static void validateDurationRange(Integer minDuration, Integer maxDuration) {
+        if (minDuration != null && minDuration < 1) {
+            throw new IllegalArgumentException("'minDuration' must be at least 1");
+        }
+        if (maxDuration != null && maxDuration < 1) {
+            throw new IllegalArgumentException("'maxDuration' must be at least 1");
+        }
+        if (minDuration != null && maxDuration != null && minDuration > maxDuration) {
+            throw new IllegalArgumentException("'minDuration' must be less than or equal to 'maxDuration'");
+        }
+    }
+
     private static String normalizeOptionalString(String value) {
         if (value == null) return null;
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
     }
 }
-
