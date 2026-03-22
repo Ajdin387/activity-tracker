@@ -12,12 +12,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ActivityStatsRepository
-        extends org.springframework.data.repository.Repository<Activity, Long> {
+public interface ActivityStatsRepository extends org.springframework.data.repository.Repository<Activity, Long> {
 
     @Query("""
             select coalesce(sum(a.durationMinutes), 0L)
-                from Activity a
+            from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
               and (a.date >= coalesce(:from, a.date))
               and (a.date <= coalesce(:to, a.date))
@@ -26,11 +25,37 @@ public interface ActivityStatsRepository
             @Param("categories") List<String> categories,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to
-            );
+    );
+
+    @Query("""
+            select count(a)
+            from Activity a
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
+            """)
+    long countActivities(
+            @Param("categories") List<String> categories,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
+
+    @Query("""
+            select count(distinct a.date)
+            from Activity a
+            where (lower(a.category) in (:categories) or :categories is null)
+              and (a.date >= coalesce(:from, a.date))
+              and (a.date <= coalesce(:to, a.date))
+            """)
+    long countActiveDays(
+            @Param("categories") List<String> categories,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
 
     @Query("""
             select new com.example.activitytracker.dto.StatsByDayResponse(a.date, coalesce(sum(a.durationMinutes), 0L))
-                from Activity a
+            from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
               and (a.date >= coalesce(:from, a.date))
               and (a.date <= coalesce(:to, a.date))
@@ -45,7 +70,7 @@ public interface ActivityStatsRepository
 
     @Query("""
             select new com.example.activitytracker.dto.StatsByCategoryResponse(lower(a.category), coalesce(sum(a.durationMinutes), 0L))
-                from Activity a
+            from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
               and (a.date >= coalesce(:from, a.date))
               and (a.date <= coalesce(:to, a.date))
@@ -60,7 +85,7 @@ public interface ActivityStatsRepository
 
     @Query("""
             select new com.example.activitytracker.dto.StatsByDayCategoryResponse(a.date, lower(a.category), coalesce(sum(a.durationMinutes), 0L))
-                from Activity a
+            from Activity a
             where (lower(a.category) in (:categories) or :categories is null)
               and (a.date >= coalesce(:from, a.date))
               and (a.date <= coalesce(:to, a.date))
